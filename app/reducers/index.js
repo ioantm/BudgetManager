@@ -1,45 +1,28 @@
 import { combineReducers } from 'redux-immutable'
 import * as types from '../constants/ActionTypes'
 import { List, Map } from 'immutable'
-
-const source = (state, action) => {
-  switch (action.type)  {
-    case types.SET_BUDGET:
-      return state.set('value', action.value);
-    case types.CREATE_SOURCE:
-      return Map({
-        id: action.sourceId,
-        name: action.name,
-        value: action.value
-      });
-    default:
-      return state;
-  }
-}
-
-const board = (state, action) => {
-  return state;
-}
-
-const boards  = (state = List(), action) => {
-  return state;
-}
-
-function selectedBoard(state = null, action) {
-  switch (action.type) {
-    case types.SELECT_BOARD:
-      return action.boardId
-    default:
-      return state
-  }
-}
+import selectedBoard, * as fromSelectedBoard from './selectedBoard'
+import boardsById, * as fromBoardsById from './boardsById'
+import sourcesById, * as fromSourcesById  from './sourcesById';
+import boardsIds, * as fromBoardsIds from './boardsIds';
 
 const rootReducer = combineReducers({
   selectedBoard,
-  boards
+  boardsIds,
+  boardsById,
+  sourcesById
 })
 
-export {
-  source
-}
 export default rootReducer;
+
+export const getSelectedBoard = (state) =>
+  fromBoardsById.getBoard(
+    state.get('boardsById'),
+    fromSelectedBoard.getSelectedId(state.get('selectedBoard'))
+  )
+
+export const getSelectedBoardId = (state) =>
+  fromSelectedBoard.getSelectedId(state.get('selectedBoard'))
+
+export const getSource = (state, id) =>
+  fromSourcesById.getSource(state.get('sourcesById'), id)

@@ -13,16 +13,19 @@ import {
 
 import appState from './fixture-data';
 
-const immutableState = fromJS(appState);
-const store = configureStore(immutableState);
-store.dispatch(actions.selectBoard('b1'));
+//const immutableState = fromJS(appState);
+const store = configureStore();
+
+
+store.dispatch(actions.loadBoards());
+
 
 class BudgetManager extends Component {
+
   render() {
-    console.log('store', store.getState());
-    return (
-      <View></View>
-    );
+    //console.log('store', store.getState());
+    return <View></View>
+
   }
 }
 
