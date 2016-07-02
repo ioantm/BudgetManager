@@ -28,11 +28,12 @@ export async function createBoard() {
   return board;
 }
 
-export async function createSource(boardId) {
+export async function createSource(boardId, sourceData) {
   const boards = await loadBoards();
   const board = boards.find(board => board.id === boardId);
   const source = {
-    id: uuid.v4()
+    id: uuid.v4(),
+    ...sourceData
   }
 
   if (board) {

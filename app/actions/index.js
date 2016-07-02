@@ -65,15 +65,16 @@ export function createBoard() {
   }
 }
 
-export function createSource(boardId) {
+export function createSource(boardId, source) {
   return function(dispatch) {
     dispatch({
       type: 'CREATE_SOURCE_START'
     })
 
-    return api.createSource(boardId)
+    return api.createSource(boardId, source)
       .then(response => dispatch({
         type: 'CREATE_SOURCE_SUCCESS',
+        boardId,
         response: normalize(response, schema.source)
       }), (err) => dispatch({
         type: 'CREATE_SOURCE_ERROR',

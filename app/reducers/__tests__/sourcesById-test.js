@@ -3,6 +3,8 @@ jest.disableAutomock();
 import * as types from '../../constants/ActionTypes'
 import sourcesById, * as fromSources from '../sourcesById'
 import { Map } from 'immutable'
+import { normalize } from 'normalizr'
+import * as schema from '../../schema';
 
 describe('sourcesById reducer', () => {
   it('is empty by default', () => {
@@ -11,17 +13,19 @@ describe('sourcesById reducer', () => {
 
   it('should create source', () => {
     const action = {
-      type: types.CREATE_SOURCE,
+      type: 'CREATE_SOURCE_SUCCESS',
       boardId: 'b1',
-      sourceId: 's1',
-      name: 'some income name',
-      value: 4000
+      response: normalize({
+        name: 'some income name',
+        value: 4000,
+        id: 's1'
+      }, schema.source)
     };
 
     const expectedSource = Map({
-      id: 's1',
       name: 'some income name',
-      value: 4000
+      value: 4000,
+      id: 's1'
     });
 
     const result = sourcesById(undefined, action);
