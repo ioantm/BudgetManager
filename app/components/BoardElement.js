@@ -13,7 +13,7 @@ export default class BoardElement extends Component {
 
 	render() {
 		return (
-			<DraggableView style={styles.circle}/>
+			<DraggableView style={[this.props.style, styles.circle]}/>
 		);
 	}
 }

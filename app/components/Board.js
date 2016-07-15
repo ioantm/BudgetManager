@@ -14,9 +14,13 @@ let {
   width: deviceWidth
 } = Dimensions.get('window');
 
+let pendingSourceId = 0;
+
 export default class Board extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {};
   }
 
   renderSources() {
@@ -28,13 +32,40 @@ export default class Board extends Component {
     });
   }
 
+  componentWillMount() {
+    this._panRensponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: this._handlePanResponderGrant.bind(this)
+    });
+  }
+
   render() {
     const { board } = this.props;
+
     return (
-      <View style={styles.container}>
-        <BoardElement/>
+      <View style={styles.container} {...this._panRensponder.panHandlers}>
+        <BoardElement style={styles.element}/>
+        {
+          this.state.pendingSource && 
+            <BoardElement key={this.state.pendingSource.id} {...this.state.pendingSource}></BoardElement>
+        }
       </View>
     )
+  }
+
+  _handlePanResponderGrant(e, gestureState) {
+    console.log('_handlePanResponderGrant', gestureState);
+    this.setState({ pendingSource: {
+      id: pendingSourceId++,
+      style: [ 
+        styles.element, 
+        { 
+          left: gestureState.x0, 
+          top: gestureState.y0,
+          transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 0 }]
+        }
+      ]
+    }})
   }
 }
 
@@ -45,9 +76,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   element: {
-    left: 50,
-    top: 300,
-    position: 'absolute'
+    position: 'absolute',
+    left: 0,
+    top: 30
   }
 })
 
