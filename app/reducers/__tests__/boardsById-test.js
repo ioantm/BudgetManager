@@ -18,11 +18,13 @@ describe('boardsById reducer', () => {
 		});
 
 		const action = {
-	      type: types.CREATE_SOURCE,
+	      type: 'CREATE_SOURCE_SUCCESS',
 	      boardId: 'b1',
 	      sourceId: 's1',
-	      name: 'some income name',
-	      value: 4000
+	      response: {
+					name: 'some income name',
+		      value: 4000
+				}
 	    };
 
 	    const nextState = Map({
@@ -56,9 +58,9 @@ describe('boardsById reducer', () => {
 		}));
 	});
 
-	it('should handle CREATE_BOARDS_SUCCESS', () => {
+	it('should handle CREATE_BOARD_SUCCESS', () => {
 		expect(boardsById(undefined, {
-			type: 'CREATE_BOARDS_SUCCESS',
+			type: 'CREATE_BOARD_SUCCESS',
 			response:{
 				entities: {
 					boards: {
@@ -73,5 +75,29 @@ describe('boardsById reducer', () => {
 				id: 'b1'
 			})
 		}))
+	})
+
+	it('should handle SELECT_ELEMENT', () => {
+		const defaultState = Map({
+			'b1': Map({
+				id: 'b1',
+				sources: List(['s1'])
+			})
+		});
+		const action = {
+			type: 'SELECT_ELEMENT',
+			boardId: 'b1',
+			id: 's1'
+		};
+
+		const expectedState = Map({
+			'b1': Map({
+				id: 'b1',
+				sources: List(['s1']),
+				selectedElement: 's1'
+			})
+		});
+
+		expect(boardsById(defaultState, action)).toEqual(expectedState);
 	})
 });

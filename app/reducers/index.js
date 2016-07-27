@@ -21,6 +21,9 @@ export const getSelectedBoard = (state) =>
     fromSelectedBoard.getSelectedId(state.get('selectedBoard'))
   )
 
+export const getFirstBoardId = (state) =>
+  fromBoardsIds.getFirstBoardId(state.get('boardsIds'));
+
 export const getSelectedBoardId = (state) =>
   fromSelectedBoard.getSelectedId(state.get('selectedBoard'))
 

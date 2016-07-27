@@ -13,4 +13,5 @@ const boardsIds = (state = List(), action) => {
 }
 
 export const getAllBoardsIds = (state) => state;
+export const getFirstBoardId = (state) => state.get(0);
 export default boardsIds;

@@ -10,10 +10,9 @@ import {
 class BudgetApp extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
-
     dispatch(actions.loadBoards())
-      .then(() => {
-        dispatch(actions.selectBoard('11f302ff-0aa1-4f48-9458-84258b688c53'))
+      .then((r) => {
+        dispatch(actions.selectFirstBoard())
       });
   }
 

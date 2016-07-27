@@ -2,6 +2,8 @@ import * as types from '../constants/ActionTypes'
 import * as api from '../api'
 import * as schema from '../schema'
 import { normalize } from 'normalizr'
+import * as reducers from '../reducers'
+import uuid from 'uuid'
 
 export function selectBoard(boardId) {
   return {
@@ -38,11 +40,29 @@ export function loadBoards() {
     return api.loadBoards()
       .then(response => dispatch({
         type: 'LOAD_BOARDS_SUCCESS',
-        response: normalize(response, schema.arrayOfBoards)
+        response: normalize(response || [], schema.arrayOfBoards)
       }), err => dispatch({
         type: 'LOAD_BOARDS_ERROR',
         message: err
       }));
+  }
+}
+
+async function getOrCreateFirstBoard(dispatch, getState){
+  const first = reducers.getFirstBoardId(getState());
+  if (first) {
+    return first;
+  } else {
+    await dispatch(createBoard())
+    return reducers.getFirstBoardId(getState());
+  }
+}
+
+export function selectFirstBoard() {
+  return (dispatch, getState) => {
+    getOrCreateFirstBoard(dispatch, getState).then(
+      (boardId) => dispatch(selectBoard(boardId))
+    );
   }
 }
 
@@ -65,20 +85,51 @@ export function createBoard() {
   }
 }
 
-export function createSource(boardId, source) {
+export function createSource(boardId, sourceData) {
   return function(dispatch) {
     dispatch({
       type: 'CREATE_SOURCE_START'
     })
 
-    return api.createSource(boardId, source)
-      .then(response => dispatch({
-        type: 'CREATE_SOURCE_SUCCESS',
-        boardId,
-        response: normalize(response, schema.source)
-      }), (err) => dispatch({
+    return api.createSource(boardId, { ...sourceData, id: uuid.v4() })
+      .then(response => {
+        dispatch({
+          type: 'CREATE_SOURCE_SUCCESS',
+          boardId,
+          sourceId: response.id,
+          response: normalize(response, schema.source)
+        });
+
+        return response;
+      }, (err) => dispatch({
         type: 'CREATE_SOURCE_ERROR',
         message: err
       }))
     }
+}
+
+export function selectElement(boardId, id) {
+  return {
+    type: 'SELECT_ELEMENT',
+    boardId,
+    id
+  };
+}
+
+export function updateSource(boardId, sourceId, props) {
+  return function(dispatch) {
+    dispatch({
+      type: 'UPDATE_SOURCE_START'
+    })
+
+    return api.updateSource(boardId, sourceId, props)
+      .then(response => dispatch({
+        type: 'UPDATE_SOURCE_SUCCESS',
+        boardId,
+        response: normalize(response, schema.source)
+      }), (err) => dispatch({
+        type: 'UPDATE_SOURCE_ERROR',
+        message: err
+      }));
+  }
 }

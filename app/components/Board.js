@@ -1,5 +1,9 @@
 import React , { Component, PropTypes } from 'react'
 import BoardElement from './BoardElement'
+import DraggableView from './DraggableView'
+import Source from './Source'
+import { Map } from 'immutable'
+
 import {
   View,
   Text,
@@ -16,7 +20,7 @@ let {
 
 let pendingSourceId = 0;
 
-export default class Board extends Component {
+class Board extends Component {
   constructor(props) {
     super(props);
 
@@ -24,47 +28,72 @@ export default class Board extends Component {
   }
 
   renderSources() {
-    const { board } = this.props;
-    const sources = this.props.board.get('sources');
+    const { board, updateSource, selectElement } = this.props;
+    const sources = board.get('sources');
 
-    return sources.map(source => {
-      return <BoardElement key={source.get('id')}/>
+    return sources && sources.map(source => {
+      return (
+        <Source key={source.get('id')}
+            onDragEnd={(x, y) =>
+              updateSource(board.get('id'), source.get('id'), { viewPosition: { x, y } })
+            }
+            onTap={() => selectElement(board.get('id'), source.get('id'))}
+            source={source}/>
+      )
     });
   }
 
   componentWillMount() {
+    const { stopScale, createSource, selectElement } = this.props;
+
     this._panRensponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: this._handlePanResponderGrant.bind(this)
+      onPanResponderGrant: this._handlePanResponderGrant.bind(this),
+      onPanResponderRelease: (e, gestureState) => {
+        const { board } = this.props;
+        const value = this.pendingSource.stopScale();
+
+        createSource(board.get('id'), {
+          value,
+          viewPosition: {
+            x: gestureState.x0 - 25,
+            y: gestureState.y0 - 25
+          }
+        }).then((response) => {
+          selectElement(board.get('id'), response.id);
+          this.setState({ pendingSource: null });
+        });
+      }
     });
   }
 
   render() {
-    const { board } = this.props;
+    const { board, updateSource } = this.props;
 
     return (
       <View style={styles.container} {...this._panRensponder.panHandlers}>
-        <BoardElement style={styles.element}/>
         {
-          this.state.pendingSource && 
-            <BoardElement key={this.state.pendingSource.id} {...this.state.pendingSource}></BoardElement>
+          this.renderSources()
+        }
+        {
+          this.state.pendingSource &&
+            <BoardElement
+              ref={(el) => this.pendingSource = el}
+              key={this.state.pendingSource.id}
+              {...this.state.pendingSource}/>
         }
       </View>
     )
   }
 
   _handlePanResponderGrant(e, gestureState) {
-    console.log('_handlePanResponderGrant', gestureState);
     this.setState({ pendingSource: {
       id: pendingSourceId++,
-      style: [ 
-        styles.element, 
-        { 
-          left: gestureState.x0, 
-          top: gestureState.y0,
-          transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 0 }]
-        }
-      ]
+      startScaleOnCreate: true,
+      viewPosition: Map({
+        x: gestureState.x0 - 25,
+        y: gestureState.y0 - 25,
+      })
     }})
   }
 }
@@ -74,14 +103,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
-  },
-  element: {
-    position: 'absolute',
-    left: 0,
-    top: 30
   }
 })
 
 Board.propTypes = {
-  board: PropTypes.object
+  board: PropTypes.object.isRequired,
+  createSource: PropTypes.func.isRequired,
+  updateSource: PropTypes.func.isRequired,
+  selectElement: PropTypes.func.isRequired
 }
+
+Board.defaultProps = {
+  board: Map(),
+  createSource: () => console.log('createSource default'),
+  updateSource: () => console.log('updateSource default'),
+  selectElement: () => console.log('selectElement default')
+}
+
+export default Board;
