@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import DraggableView from './DraggableView';
 import AnimatedScale from './AnimatedScale';
+import { Map } from 'immutable';
 import {
 	StyleSheet,
 	View,
@@ -21,15 +22,19 @@ class BoardElement extends Component {
 			viewPosition
 		} = this.props;
 
-		//console.log(' viewPosition ', viewPosition)
+		console.log(' viewPosition ', viewPosition)
 		return (
 			<Animated.View
 				ref={(comp) => this._viewRef = comp}
 				{...restProps}
 				style={[
-						style,
 						styles.circle,
-						{ transform: [{ translateX: viewPosition.x }, { translateY: viewPosition.y }, { scale: scaleValue }] }
+						style,
+						{ transform:
+							[
+								viewPosition && { translateX: viewPosition.get('x') }, { translateY: viewPosition.get('y') },
+								{ scale: scaleValue }
+							] }
 					]}/>
 		);
 	}
@@ -40,16 +45,21 @@ BoardElement.propTypes = {
 	viewPosition: PropTypes.object.isRequired
 }
 
-export default AnimatedScale(DraggableView(BoardElement));
+BoardElement.defaultProps = {
+	scaleValue: 0,
+	viewPosition: Map({ x: 0, y: 0})
+}
+
+export default BoardElement;
 
 const styles = {
 	circle: {
-		width: 50,
-		height: 50,
+		width: 100,
+		height: 100,
 		position: 'absolute',
 		left: 0,
 		top: 0,
-		borderRadius: 50/2,
+		borderRadius: 100/2,
 		backgroundColor: 'black'
 	}
 };

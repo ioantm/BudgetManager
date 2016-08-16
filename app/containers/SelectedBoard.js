@@ -36,11 +36,11 @@ const mapStateToProps = (state) => {
   }
 };
 
-const mapDispathcToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch) => {
 	return {
 		createSource: (boardId, source) => dispatch(actions.createSource(boardId, source)),
 		updateSource: (boardId, sourceId, sourceProps) => dispatch(actions.updateSource(boardId, sourceId, sourceProps)),
 		selectElement: (boardId, id) => dispatch(actions.selectElement(boardId, id))
 	}
 }
-export default connect(mapStateToProps, mapDispathcToProps)(SelectedBoard);
+export default connect(mapStateToProps, mapDispatchToProps)(SelectedBoard);

@@ -20,6 +20,7 @@ export default function(InnerView) {
   		this._value = position;
   		this._animatedValue = new Animated.ValueXY();
       this._animatedValue.setValue(position);
+			console.log('position', position);
   		this._animatedValue.addListener((value) => { this._value = value;});
   		this._panResponder = PanResponder.create({
   			onStartShouldSetPanResponder: () => true,
@@ -28,9 +29,9 @@ export default function(InnerView) {
   			onPanResponderGrant: (e, gestureState) => {
 
 					onTap();
-  				this._animatedValue.setOffset({ x: this._value.x, y: this._value.y });
-  				//this._animatedValue.setValue({ x: 0, y: 0 });
-          console.log('start drag');
+  				this._animatedValue.setOffset(this._value);
+  				this._animatedValue.setValue({ x: 0, y: 0 });
+          console.log('start drag', this._animatedValue.y);
   			},
   			onPanResponderMove: Animated.event([null, { dx: this._animatedValue.x, dy: this._animatedValue.y }]),
   			onPanResponderRelease: () => {
@@ -42,7 +43,6 @@ export default function(InnerView) {
   	}
 
   	render() {
-      console.log('render');
       const {
         viewPosition,
         onDragEnd,

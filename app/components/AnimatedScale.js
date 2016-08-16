@@ -27,14 +27,24 @@ const AnimatedScale = (InnerComponent) => {
 	  }
 
 		componentDidMount() {
-			if (this.props.startScaleOnCreate) {
+			if (this.props.scaling) {
 				this.startScale(0);
+			}
+		}
+
+		componentWillReceiveProps({ scaling, scaleEnd }) {
+			if (scaling !== this.props.scaling) {
+				if (scaling === true) {
+					this.startScale();
+				} else if (scaling === false){
+					this.stopScale();
+				}
 			}
 		}
 
 	  stopScale() {
 	    this._animatedValue.stopAnimation();
-			return this._animatedValue._value;
+			this.props.scaleEnd(this._animatedValue._value);
 	  }
 
 	  render() {
@@ -43,7 +53,7 @@ const AnimatedScale = (InnerComponent) => {
 	      outputRange: [0.15, 1]
 	    })
 			const {
-				startScaleOnCreate, value, ...rest
+				scaling, value, ...rest
 			}  = this.props;
 
 	    return (
@@ -55,12 +65,13 @@ const AnimatedScale = (InnerComponent) => {
 	}
 
 	AnimatedScaleView.propTypes = {
-			startScaleOnCreate: PropTypes.bool.isRequired,
+			scaling: PropTypes.bool.isRequired,
+			scaleEnd: PropTypes.func,
 			value: PropTypes.number.isRequired
 	}
 
 	AnimatedScaleView.defaultProps = {
-		startScaleOnCreate: false,
+		scaling: false,
 		value: 0
 	}
 
