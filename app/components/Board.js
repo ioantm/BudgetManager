@@ -4,6 +4,7 @@ import DraggableView from './DraggableView'
 import Source from './Source'
 import SelectedBoardSources from '../containers/SelectedBoardSources'
 import { Map } from 'immutable'
+import PrecisionSlider from '../components/PrecisionSlider'
 
 import {
   View,
@@ -24,30 +25,22 @@ class Board extends Component {
   render() {
     const { board, updateSource } = this.props;
     return (
-      // <View style={styles.container} {...this._panRensponder.panHandlers}>
-      //   {
-      //     this.renderSources()
-      //   }
-      //   {
-      //     this.state.pendingSource &&
-      //       <Source
-      //         ref={(el) => {this.pendingSourceComp = el; console.log('set ref', el)}}
-      //         scaleEnd={this.scaleEnd}
-      //         scaling={this.state.scaling}
-      //         source={this.state.pendingSource}
-      //         key={'pendingSource'}/>
-      //   }
-      // </View>
-      <SelectedBoardSources/>
+      <View style={styles.container}>
+        <View style={styles.boardView}></View>
+        <SelectedBoardSources/>
+        <PrecisionSlider/>
+      </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  boardView: {
+    flex: 1
+  },
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    flexDirection: 'column',
+    flex: 1
   }
 })
 

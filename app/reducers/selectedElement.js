@@ -7,5 +7,5 @@ const selectedElement = (state = null, action ) => {
   }
 }
 
-export const getSelectedElement = (state) => state;
+export const getSelectedElementId = (state) => state;
 export default selectedElement;

@@ -1,10 +1,12 @@
-import React, { Component, PropTypes } from 'react';
-import DraggableView from './DraggableView';
-import AnimatedScale from './AnimatedScale';
-import { Map } from 'immutable';
+import React, { Component, PropTypes } from 'react'
+import DraggableView from './DraggableView'
+import AnimatedScale from './AnimatedScale'
+import { Map } from 'immutable'
+import numeral from 'numeral'
 import {
 	StyleSheet,
 	View,
+	Text,
 	Animated
 } from 'react-native'
 
@@ -13,18 +15,24 @@ class BoardElement extends Component {
     super(props);
   }
 
+	setNativeProps(nativeProps) {
+		this._viewRef.setNativeProps(nativeProps);
+	}
+
 	render() {
 		const {
 			style,
 			...restProps,
-			scaleValue,
+			scale,
 			animatedPos,
-			viewPosition
+			viewPosition,
+			value,
+			children
 		} = this.props;
-
-		console.log(' viewPosition ', viewPosition)
+		console.log("children", children);
 		return (
-			<Animated.View
+			<View>
+				<Animated.View
 				ref={(comp) => this._viewRef = comp}
 				{...restProps}
 				style={[
@@ -32,27 +40,36 @@ class BoardElement extends Component {
 						style,
 						{ transform:
 							[
-								viewPosition && { translateX: viewPosition.get('x') }, { translateY: viewPosition.get('y') },
-								{ scale: scaleValue }
-							] }
-					]}/>
+								{ translateX: viewPosition.get('x') }, { translateY: viewPosition.get('y') },
+								{ scale }
+							]
+						}
+					]}>
+					</Animated.View>
+					<View style={{alignItems: 'center', flex: 1}}>
+						<Text> {numeral(value).format('$0,0.0')} </Text>
+					</View>
+			</View>
 		);
 	}
 }
 
 BoardElement.propTypes = {
-	scaleValue: PropTypes.object.isRequired,
+	scale: PropTypes.object.isRequired,
 	viewPosition: PropTypes.object.isRequired
 }
 
 BoardElement.defaultProps = {
-	scaleValue: 0,
+	scale: 0,
 	viewPosition: Map({ x: 0, y: 0})
 }
 
 export default BoardElement;
 
 const styles = {
+	container: {
+
+	},
 	circle: {
 		width: 100,
 		height: 100,

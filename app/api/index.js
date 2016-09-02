@@ -26,10 +26,14 @@ export async function createBoard() {
     id: uuid.v4()
   };
   const boards = await loadBoards();
+  try {
+    await saveLocalData({
+      boards: [board, ...(boards || [])]
+    });
+  } catch(e) {
+    console.log(e);
+  }
 
-  await saveLocalData({
-    boards: [board, ...(boards || [])]
-  });
 
   return board;
 }

@@ -1,10 +1,14 @@
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 import * as types from '../constants/ActionTypes'
 
 const boardsById = (state = Map(), action) => {
   switch (action.type) {
   	case 'CREATE_SOURCE_SUCCESS':
-  		return state.updateIn([action.boardId, 'sources'], (sources) => sources.push(action.sourceId));
+  		return state.updateIn(
+        [action.boardId, 'sources'],
+        List(),
+        (sources) => sources.push(action.sourceId)
+      );
     case 'SELECT_ELEMENT':
       return state.setIn([action.boardId, 'selectedElement'], action.id);
   	default:

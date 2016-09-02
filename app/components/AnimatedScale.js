@@ -8,6 +8,7 @@ import {
 
 const MIN_BUDGET = 0;
 const MAX_BUDGET = 99999;
+const MIN_SCALE = 0.15;
 
 const AnimatedScale = (InnerComponent) => {
 	class AnimatedScaleView extends Component {
@@ -42,24 +43,31 @@ const AnimatedScale = (InnerComponent) => {
 			}
 		}
 
+		setNativeProps(nativeProps) {
+			this.refs['inner'].setNativeProps(nativeProps);
+		}
+
 	  stopScale() {
 	    this._animatedValue.stopAnimation();
 			this.props.scaleEnd(this._animatedValue._value);
 	  }
 
 	  render() {
-	    const scaleValue = this._animatedValue.interpolate({
+	    const scale = this._animatedValue.interpolate({
 	      inputRange: [MIN_BUDGET, MAX_BUDGET],
-	      outputRange: [0.15, 1]
-	    })
+	      outputRange: [MIN_SCALE, 1]
+	    });
+
 			const {
-				scaling, value, ...rest
+				scaling, value, children, ...rest
 			}  = this.props;
 
 	    return (
-	      <InnerComponent
+	      <InnerComponent ref='inner'
 					{...rest}
-					scaleValue={scaleValue}/>
+					value={value}
+					scale={scale}>
+				</InnerComponent>
 	    );
 	  }
 	}
